@@ -5,7 +5,7 @@ import {
   INFO_PANEL_HEADING,
 } from './content.js';
 
-export function createUi({ onViewChange }) {
+export function createUi({ onViewChange, onResetView }) {
   const root = document.createElement('div');
   root.className = 'ui-root';
 
@@ -28,6 +28,13 @@ export function createUi({ onViewChange }) {
   infoToggle.title = 'Toggle info panel';
   infoToggle.textContent = 'i';
 
+  const resetViewButton = document.createElement('button');
+  resetViewButton.type = 'button';
+  resetViewButton.className = 'icon-button';
+  resetViewButton.setAttribute('aria-label', 'Reset view');
+  resetViewButton.title = 'Reset zoom and rotation';
+  resetViewButton.textContent = '⟲';
+
   const fullscreenButton = document.createElement('button');
   fullscreenButton.type = 'button';
   fullscreenButton.className = 'icon-button';
@@ -36,6 +43,7 @@ export function createUi({ onViewChange }) {
   fullscreenButton.textContent = '⛶';
 
   actionBar.appendChild(infoToggle);
+  actionBar.appendChild(resetViewButton);
   actionBar.appendChild(fullscreenButton);
 
   const infoPanel = document.createElement('aside');
@@ -104,6 +112,10 @@ export function createUi({ onViewChange }) {
       button.disabled = loading;
     });
   }
+
+  resetViewButton.addEventListener('click', () => {
+    onResetView();
+  });
 
   fullscreenButton.addEventListener('click', () => {
     if (!document.fullscreenElement) {
