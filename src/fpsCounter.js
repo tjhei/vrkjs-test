@@ -19,10 +19,9 @@ export function createFpsCounter({ smoothing = 0.92 } = {}) {
   };
 }
 
-export function attachFpsCounter(renderWindow, fpsCounter) {
-  const render = renderWindow.render.bind(renderWindow);
-  renderWindow.render = () => {
+export function createTrackedRender(renderWindow, fpsCounter) {
+  return () => {
     fpsCounter.recordFrame();
-    render();
+    renderWindow.render();
   };
 }

@@ -6,7 +6,7 @@ import '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 
 import './styles.css';
-import { attachFpsCounter, createFpsCounter } from './fpsCounter.js';
+import { createTrackedRender, createFpsCounter } from './fpsCounter.js';
 import { createFrameLoop } from './frameLoop.js';
 import { createRotationController } from './rotationController.js';
 import { createSceneManager } from './sceneManager.js';
@@ -28,7 +28,7 @@ const interactor = fullScreenRenderer.getInteractor();
 const camera = renderer.getActiveCamera();
 
 const fpsCounter = createFpsCounter();
-attachFpsCounter(renderWindow, fpsCounter);
+const trackedRender = createTrackedRender(renderWindow, fpsCounter);
 
 const sceneManager = createSceneManager(renderer, renderWindow);
 const rotationController = createRotationController({
@@ -55,7 +55,7 @@ const frameLoop = createFrameLoop({
   onFrame(deltaSeconds) {
     if (!rotationController.isRotationPaused()) {
       camera.azimuth(ROTATION_DEG_PER_SEC * deltaSeconds);
-      renderWindow.render();
+      trackedRender();
     }
   },
 });
