@@ -6,6 +6,7 @@ import '@kitware/vtk.js/IO/Core/DataAccessHelper/JSZipDataAccessHelper';
 import vtkFullScreenRenderWindow from '@kitware/vtk.js/Rendering/Misc/FullScreenRenderWindow';
 
 import './styles.css';
+import { attachFpsCounter, createFpsCounter } from './fpsCounter.js';
 import { createFrameLoop } from './frameLoop.js';
 import { createRotationController } from './rotationController.js';
 import { createSceneManager } from './sceneManager.js';
@@ -25,6 +26,9 @@ const renderer = fullScreenRenderer.getRenderer();
 const renderWindow = fullScreenRenderer.getRenderWindow();
 const interactor = fullScreenRenderer.getInteractor();
 const camera = renderer.getActiveCamera();
+
+const fpsCounter = createFpsCounter();
+attachFpsCounter(renderWindow, fpsCounter);
 
 const sceneManager = createSceneManager(renderer, renderWindow);
 const rotationController = createRotationController({
@@ -62,21 +66,28 @@ async function switchView(viewId) {
     return;
   }
 
-  ui.setLoading(true);
+  const needsLoad = !sceneManager.isCached(viewId);
+  if (needsLoad) {
+    ui.setLoading(true);
+  }
+
   try {
-    await sceneManager.loadScene(view.url);
+    await sceneManager.loadScene(viewId, view.url);
     activeViewId = viewId;
     ui.setActiveView(viewId);
   } catch (error) {
     console.error(`Failed to load view "${viewId}":`, error);
   } finally {
-    ui.setLoading(false);
+    if (needsLoad) {
+      ui.setLoading(false);
+    }
   }
 }
 
 switchView(activeViewId)
   .then(() => {
     frameLoop.start();
+    ui.startFpsDisplay(() => fpsCounter.getFps());
   })
   .catch((error) => {
     console.error('Failed to load initial scene:', error);

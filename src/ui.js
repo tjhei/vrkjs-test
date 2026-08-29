@@ -66,8 +66,33 @@ export function createUi({ onViewChange }) {
     );
   });
 
+  const fpsCounter = document.createElement('div');
+  fpsCounter.className = 'fps-counter';
+  fpsCounter.textContent = 'FPS —';
+  root.appendChild(fpsCounter);
+
+  let fpsRafId = 0;
+
+  function startFpsDisplay(getFps) {
+    const update = () => {
+      const fps = getFps();
+      fpsCounter.textContent = fps > 0 ? `${Math.round(fps)} FPS` : 'FPS —';
+      fpsRafId = requestAnimationFrame(update);
+    };
+    fpsRafId = requestAnimationFrame(update);
+  }
+
+  function stopFpsDisplay() {
+    if (fpsRafId) {
+      cancelAnimationFrame(fpsRafId);
+      fpsRafId = 0;
+    }
+  }
+
   return {
     setActiveView,
     setLoading,
+    startFpsDisplay,
+    stopFpsDisplay,
   };
 }
