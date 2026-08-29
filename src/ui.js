@@ -17,47 +17,41 @@ export function createUi({ onViewChange }) {
   title.textContent = APP_TITLE;
   header.appendChild(title);
 
+  const actionBar = document.createElement('div');
+  actionBar.className = 'action-bar';
+
+  const infoToggle = document.createElement('button');
+  infoToggle.type = 'button';
+  infoToggle.className = 'icon-button';
+  infoToggle.setAttribute('aria-label', 'Toggle information panel');
+  infoToggle.setAttribute('aria-expanded', 'true');
+  infoToggle.title = 'Toggle info panel';
+  infoToggle.textContent = 'i';
+
   const fullscreenButton = document.createElement('button');
   fullscreenButton.type = 'button';
-  fullscreenButton.className = 'icon-button fullscreen-button';
+  fullscreenButton.className = 'icon-button';
   fullscreenButton.setAttribute('aria-label', 'Toggle fullscreen');
   fullscreenButton.title = 'Toggle fullscreen';
   fullscreenButton.textContent = '⛶';
+
+  actionBar.appendChild(infoToggle);
+  actionBar.appendChild(fullscreenButton);
 
   const infoPanel = document.createElement('aside');
   infoPanel.className = 'info-panel';
   infoPanel.setAttribute('aria-label', 'Scene information');
 
-  const infoPanelHeader = document.createElement('div');
-  infoPanelHeader.className = 'info-panel__header';
-
   const infoPanelHeading = document.createElement('h2');
   infoPanelHeading.className = 'info-panel__heading';
   infoPanelHeading.textContent = INFO_PANEL_HEADING;
-
-  const infoPanelClose = document.createElement('button');
-  infoPanelClose.type = 'button';
-  infoPanelClose.className = 'icon-button info-panel__close';
-  infoPanelClose.setAttribute('aria-label', 'Hide information panel');
-  infoPanelClose.title = 'Hide panel';
-  infoPanelClose.textContent = '×';
 
   const infoPanelBody = document.createElement('div');
   infoPanelBody.className = 'info-panel__body';
   infoPanelBody.innerHTML = INFO_PANEL_BODY_HTML;
 
-  infoPanelHeader.appendChild(infoPanelHeading);
-  infoPanelHeader.appendChild(infoPanelClose);
-  infoPanel.appendChild(infoPanelHeader);
+  infoPanel.appendChild(infoPanelHeading);
   infoPanel.appendChild(infoPanelBody);
-
-  const infoPanelOpen = document.createElement('button');
-  infoPanelOpen.type = 'button';
-  infoPanelOpen.className = 'icon-button info-panel-open';
-  infoPanelOpen.setAttribute('aria-label', 'Show information panel');
-  infoPanelOpen.title = 'Show info';
-  infoPanelOpen.textContent = 'ℹ';
-  infoPanelOpen.hidden = true;
 
   const viewBar = document.createElement('nav');
   viewBar.className = 'view-bar';
@@ -81,8 +75,7 @@ export function createUi({ onViewChange }) {
   fpsCounter.textContent = 'FPS —';
 
   root.appendChild(header);
-  root.appendChild(fullscreenButton);
-  root.appendChild(infoPanelOpen);
+  root.appendChild(actionBar);
   root.appendChild(infoPanel);
   root.appendChild(viewBar);
   root.appendChild(fpsCounter);
@@ -91,16 +84,13 @@ export function createUi({ onViewChange }) {
   function setInfoPanelVisible(visible) {
     root.classList.toggle('info-panel-hidden', !visible);
     infoPanel.hidden = !visible;
-    infoPanelOpen.hidden = visible;
-    infoPanelClose.setAttribute('aria-label', visible ? 'Hide information panel' : 'Show information panel');
+    infoToggle.classList.toggle('active', visible);
+    infoToggle.setAttribute('aria-expanded', String(visible));
+    infoToggle.title = visible ? 'Hide info panel' : 'Show info panel';
   }
 
-  infoPanelClose.addEventListener('click', () => {
-    setInfoPanelVisible(false);
-  });
-
-  infoPanelOpen.addEventListener('click', () => {
-    setInfoPanelVisible(true);
+  infoToggle.addEventListener('click', () => {
+    setInfoPanelVisible(infoPanel.hidden);
   });
 
   function setActiveView(viewId) {
