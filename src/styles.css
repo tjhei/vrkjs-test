@@ -6,6 +6,7 @@ body {
   height: 100%;
   overflow: hidden;
   background: #1a1a1a;
+  color: #f2f2f2;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
 }
 
@@ -21,20 +22,90 @@ body {
   z-index: 10;
 }
 
-.top-bar {
+.app-header {
   position: absolute;
-  top: 12px;
-  right: 12px;
+  top: 0;
+  left: 0;
+  right: 280px;
   display: flex;
-  gap: 8px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  pointer-events: none;
+}
+
+.app-title {
+  margin: 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  text-shadow: 0 1px 12px rgba(0, 0, 0, 0.45);
+  pointer-events: none;
+}
+
+.info-panel {
+  position: absolute;
+  top: 16px;
+  right: 16px;
+  bottom: 16px;
+  width: 248px;
+  padding: 18px 18px 20px;
+  border-radius: 14px;
+  background: rgba(20, 20, 24, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  backdrop-filter: blur(12px);
+  overflow-y: auto;
   pointer-events: auto;
+}
+
+.info-panel__heading {
+  margin: 0 0 12px;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #fff;
+}
+
+.info-panel p {
+  margin: 0 0 12px;
+  font-size: 0.875rem;
+  line-height: 1.55;
+  color: rgba(255, 255, 255, 0.78);
+}
+
+.info-panel code {
+  font-size: 0.8rem;
+  padding: 0.1em 0.35em;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.info-panel__links {
+  margin: 16px 0 0;
+  padding-left: 18px;
+}
+
+.info-panel__links li {
+  margin-bottom: 8px;
+  font-size: 0.875rem;
+  line-height: 1.4;
+}
+
+.info-panel a {
+  color: #8eb7ff;
+  text-decoration: none;
+}
+
+.info-panel a:hover {
+  color: #b3ceff;
+  text-decoration: underline;
 }
 
 .view-bar {
   position: absolute;
   left: 50%;
   bottom: 20px;
-  transform: translateX(-50%);
+  transform: translateX(calc(-50% - 140px));
   display: flex;
   gap: 8px;
   padding: 8px;
@@ -72,6 +143,7 @@ body {
   padding: 0;
   font-size: 16px;
   line-height: 1;
+  pointer-events: auto;
 }
 
 .view-button:hover,
@@ -105,4 +177,24 @@ body {
   font-variant-numeric: tabular-nums;
   letter-spacing: 0.02em;
   pointer-events: none;
+}
+
+@media (max-width: 900px) {
+  .app-header {
+    right: 0;
+    padding-right: 72px;
+  }
+
+  .info-panel {
+    top: auto;
+    left: 16px;
+    right: 16px;
+    bottom: 88px;
+    width: auto;
+    max-height: 34vh;
+  }
+
+  .view-bar {
+    transform: translateX(-50%);
+  }
 }
