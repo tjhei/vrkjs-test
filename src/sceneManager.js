@@ -1,59 +1,102 @@
 import { loadVtkJsScene } from './loadVtkJsScene.js';
+import {
+  animateFade,
+  FADE_MS,
+  hideEntries,
+  showEntries,
+} from './sceneFade.js';
 
 function getSceneEntries(sceneLoader) {
   return sceneLoader.getScene().map((item) => ({
     actor: item.actor,
     volume: item.volume,
+    baseOpacity: item.actor ? item.actor.getProperty().getOpacity() : 1,
   }));
 }
 
-function setSceneVisibility(entries, visible) {
-  entries.forEach(({ actor, volume }) => {
-    if (actor) {
-      actor.setVisibility(visible);
-    }
-    if (volume) {
-      volume.setVisibility(visible);
-    }
+function hideAllScenes(cache) {
+  cache.forEach((cached) => {
+    hideEntries(cached.entries);
   });
 }
 
 /**
- * Lazy-load scenes on first visit and keep them in memory for instant switching.
+ * Lazy-load scenes on first visit, keep them cached, and cross-fade transitions.
  */
 export function createSceneManager(renderer, renderWindow) {
   const cache = new Map();
   let activeViewId = null;
-  let activeLoadId = 0;
+  let activeTransitionId = 0;
 
-  async function loadScene(viewId, url) {
-    const loadId = ++activeLoadId;
-
-    if (activeViewId && cache.has(activeViewId)) {
-      setSceneVisibility(cache.get(activeViewId).entries, false);
+  async function ensureCached(viewId, url, transitionId) {
+    if (cache.has(viewId)) {
+      return cache.get(viewId);
     }
 
-    let cached = cache.get(viewId);
-    if (!cached) {
-      const sceneLoader = await loadVtkJsScene(renderer, url);
-      if (loadId !== activeLoadId) {
-        return null;
-      }
-
-      cached = {
-        sceneLoader,
-        entries: getSceneEntries(sceneLoader),
-      };
-      cache.set(viewId, cached);
-    } else if (loadId !== activeLoadId) {
+    const sceneLoader = await loadVtkJsScene(renderer, url);
+    if (transitionId !== activeTransitionId) {
       return null;
     }
 
-    setSceneVisibility(cached.entries, true);
-    activeViewId = viewId;
+    const cached = {
+      sceneLoader,
+      entries: getSceneEntries(sceneLoader),
+    };
+    hideEntries(cached.entries);
+    cache.set(viewId, cached);
+    return cached;
+  }
+
+  async function loadScene(viewId, url) {
+    const transitionId = ++activeTransitionId;
+    hideAllScenes(cache);
+
+    const outgoing =
+      activeViewId && activeViewId !== viewId ? cache.get(activeViewId) : null;
+    const loadPromise = ensureCached(viewId, url, transitionId);
+
+    if (outgoing) {
+      showEntries(outgoing.entries);
+      await animateFade({
+        entries: outgoing.entries,
+        from: 1,
+        to: 0,
+        durationMs: FADE_MS,
+        onFrame: () => renderWindow.render(),
+      });
+      if (transitionId !== activeTransitionId) {
+        return null;
+      }
+      hideEntries(outgoing.entries);
+    }
+
+    const incoming = await loadPromise;
+    if (!incoming || transitionId !== activeTransitionId) {
+      if (incoming) {
+        hideEntries(incoming.entries);
+      }
+      return null;
+    }
+
     renderer.resetCamera();
+
+    await animateFade({
+      entries: incoming.entries,
+      from: 0,
+      to: 1,
+      durationMs: FADE_MS,
+      onFrame: () => renderWindow.render(),
+    });
+
+    if (transitionId !== activeTransitionId) {
+      hideEntries(incoming.entries);
+      return null;
+    }
+
+    activeViewId = viewId;
+    showEntries(incoming.entries);
     renderWindow.render();
-    return cached.sceneLoader;
+    return incoming.sceneLoader;
   }
 
   return {
