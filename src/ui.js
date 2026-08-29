@@ -15,11 +15,10 @@ export function createUi({ onViewChange }) {
 
   const fullscreenButton = document.createElement('button');
   fullscreenButton.type = 'button';
-  fullscreenButton.className = 'icon-button';
+  fullscreenButton.className = 'icon-button fullscreen-button';
   fullscreenButton.setAttribute('aria-label', 'Toggle fullscreen');
   fullscreenButton.title = 'Toggle fullscreen';
   fullscreenButton.textContent = '⛶';
-  header.appendChild(fullscreenButton);
 
   const infoPanel = document.createElement('aside');
   infoPanel.className = 'info-panel';
@@ -48,6 +47,7 @@ export function createUi({ onViewChange }) {
   fpsCounter.textContent = 'FPS —';
 
   root.appendChild(header);
+  root.appendChild(fullscreenButton);
   root.appendChild(infoPanel);
   root.appendChild(viewBar);
   root.appendChild(fpsCounter);
