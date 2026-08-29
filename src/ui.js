@@ -1,5 +1,9 @@
 import { VIEWS } from './views.js';
-import { APP_TITLE, INFO_PANEL_HTML } from './content.js';
+import {
+  APP_TITLE,
+  INFO_PANEL_BODY_HTML,
+  INFO_PANEL_HEADING,
+} from './content.js';
 
 export function createUi({ onViewChange }) {
   const root = document.createElement('div');
@@ -23,7 +27,37 @@ export function createUi({ onViewChange }) {
   const infoPanel = document.createElement('aside');
   infoPanel.className = 'info-panel';
   infoPanel.setAttribute('aria-label', 'Scene information');
-  infoPanel.innerHTML = INFO_PANEL_HTML;
+
+  const infoPanelHeader = document.createElement('div');
+  infoPanelHeader.className = 'info-panel__header';
+
+  const infoPanelHeading = document.createElement('h2');
+  infoPanelHeading.className = 'info-panel__heading';
+  infoPanelHeading.textContent = INFO_PANEL_HEADING;
+
+  const infoPanelClose = document.createElement('button');
+  infoPanelClose.type = 'button';
+  infoPanelClose.className = 'icon-button info-panel__close';
+  infoPanelClose.setAttribute('aria-label', 'Hide information panel');
+  infoPanelClose.title = 'Hide panel';
+  infoPanelClose.textContent = '×';
+
+  const infoPanelBody = document.createElement('div');
+  infoPanelBody.className = 'info-panel__body';
+  infoPanelBody.innerHTML = INFO_PANEL_BODY_HTML;
+
+  infoPanelHeader.appendChild(infoPanelHeading);
+  infoPanelHeader.appendChild(infoPanelClose);
+  infoPanel.appendChild(infoPanelHeader);
+  infoPanel.appendChild(infoPanelBody);
+
+  const infoPanelOpen = document.createElement('button');
+  infoPanelOpen.type = 'button';
+  infoPanelOpen.className = 'icon-button info-panel-open';
+  infoPanelOpen.setAttribute('aria-label', 'Show information panel');
+  infoPanelOpen.title = 'Show info';
+  infoPanelOpen.textContent = 'ℹ';
+  infoPanelOpen.hidden = true;
 
   const viewBar = document.createElement('nav');
   viewBar.className = 'view-bar';
@@ -48,10 +82,26 @@ export function createUi({ onViewChange }) {
 
   root.appendChild(header);
   root.appendChild(fullscreenButton);
+  root.appendChild(infoPanelOpen);
   root.appendChild(infoPanel);
   root.appendChild(viewBar);
   root.appendChild(fpsCounter);
   document.body.appendChild(root);
+
+  function setInfoPanelVisible(visible) {
+    root.classList.toggle('info-panel-hidden', !visible);
+    infoPanel.hidden = !visible;
+    infoPanelOpen.hidden = visible;
+    infoPanelClose.setAttribute('aria-label', visible ? 'Hide information panel' : 'Show information panel');
+  }
+
+  infoPanelClose.addEventListener('click', () => {
+    setInfoPanelVisible(false);
+  });
+
+  infoPanelOpen.addEventListener('click', () => {
+    setInfoPanelVisible(true);
+  });
 
   function setActiveView(viewId) {
     buttons.forEach((button) => {

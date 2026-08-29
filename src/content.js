@@ -1,7 +1,8 @@
 export const APP_TITLE = 'VTK.js Scene Viewer';
 
-export const INFO_PANEL_HTML = `
-  <h2 class="info-panel__heading">About this viewer</h2>
+export const INFO_PANEL_HEADING = 'About this viewer';
+
+export const INFO_PANEL_BODY_HTML = `
   <p>
     Explore sample 3D scenes exported as <code>.vtkjs</code> archives. Drag to
     orbit, use the buttons below to switch models, and watch the camera rotate
