@@ -9,9 +9,14 @@ import vtkHttpSceneLoader from '@kitware/vtk.js/IO/Core/HttpSceneLoader';
  * the scene one directory deep (for example earth.vtp/index.json).
  */
 export async function loadVtkJsScene(renderer, vtkJsUrl, sceneIndexPath = 'index.json') {
+  const startTime = performance.now();
+
+  const fetchStart = performance.now();
   const zipContent = await HttpDataAccessHelper.fetchBinary(vtkJsUrl);
+  const fetchMs = performance.now() - fetchStart;
 
   return new Promise((resolve, reject) => {
+    const parseStart = performance.now();
     const dataAccessHelper = DataAccessHelper.get('zip', {
       zipContent,
       callback: () => {
@@ -21,7 +26,14 @@ export async function loadVtkJsScene(renderer, vtkJsUrl, sceneIndexPath = 'index
         });
 
         sceneLoader.setUrl(sceneIndexPath);
-        sceneLoader.onReady(() => resolve(sceneLoader));
+        sceneLoader.onReady(() => {
+          const parseMs = performance.now() - parseStart;
+          const totalMs = performance.now() - startTime;
+          console.log(
+            `[vtkjs] Loaded ${vtkJsUrl} in ${totalMs.toFixed(0)}ms (fetch: ${fetchMs.toFixed(0)}ms, parse: ${parseMs.toFixed(0)}ms)`,
+          );
+          resolve(sceneLoader);
+        });
       },
     });
 
