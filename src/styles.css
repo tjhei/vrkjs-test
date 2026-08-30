@@ -184,6 +184,20 @@ body {
   flex: 0 1 auto;
 }
 
+.view-button.cycle-toggle {
+  min-width: 44px;
+  padding: 10px 12px;
+  font-size: 18px;
+  line-height: 1;
+}
+
+.view-bar__divider {
+  align-self: stretch;
+  width: 1px;
+  margin: 4px 0;
+  background: rgba(255, 255, 255, 0.12);
+}
+
 .action-bar .icon-button {
   width: 36px;
   height: 36px;
