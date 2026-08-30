@@ -81,6 +81,11 @@ export function createSceneManager(renderer, renderWindow) {
       return null;
     }
 
+    // resetCamera() only considers visible props. The incoming scene is hidden
+    // while it fades in, so make it visible long enough for vtk.js to compute
+    // its bounds and clipping range. Otherwise the first render can be empty
+    // until an interaction updates the camera.
+    showEntries(incoming.entries);
     renderer.resetCamera();
     homeCameraByViewId.set(viewId, captureCameraState(camera));
 
