@@ -16,6 +16,7 @@ import { VIEWS } from './views.js';
 const ROTATION_DEG_PER_SEC = 12;
 const TARGET_FPS = 60;
 const INTERACTION_RESUME_DELAY_MS = 1000;
+const CYCLE_INTERVAL_MS = 10_000;
 
 const container = document.querySelector('#app');
 const fullScreenRenderer = vtkFullScreenRenderWindow.newInstance({
@@ -38,16 +39,52 @@ const rotationController = createRotationController({
 
 const viewById = Object.fromEntries(VIEWS.map((view) => [view.id, view]));
 let activeViewId = VIEWS[0].id;
+let cycleEnabled = true;
+let cycleTimerId = 0;
+
+function getNextViewId(currentId) {
+  const index = VIEWS.findIndex((view) => view.id === currentId);
+  return VIEWS[(index + 1) % VIEWS.length].id;
+}
+
+function clearCycleTimer() {
+  if (cycleTimerId) {
+    clearTimeout(cycleTimerId);
+    cycleTimerId = 0;
+  }
+}
+
+function scheduleNextCycle() {
+  clearCycleTimer();
+  if (!cycleEnabled) {
+    return;
+  }
+
+  cycleTimerId = window.setTimeout(async () => {
+    const nextId = getNextViewId(activeViewId);
+    await switchView(nextId);
+    scheduleNextCycle();
+  }, CYCLE_INTERVAL_MS);
+}
 
 const ui = createUi({
   onViewChange: (viewId) => {
     if (viewId === activeViewId) {
       return;
     }
-    switchView(viewId);
+    clearCycleTimer();
+    switchView(viewId).then(() => scheduleNextCycle());
   },
   onResetView: () => {
     sceneManager.resetActiveCameraView();
+  },
+  onCycleChange: (enabled) => {
+    cycleEnabled = enabled;
+    if (enabled) {
+      scheduleNextCycle();
+    } else {
+      clearCycleTimer();
+    }
   },
 });
 
@@ -91,6 +128,7 @@ switchView(activeViewId)
   .then(() => {
     frameLoop.start();
     ui.startFpsDisplay(() => fpsCounter.getFps());
+    scheduleNextCycle();
   })
   .catch((error) => {
     console.error('Failed to load initial scene:', error);

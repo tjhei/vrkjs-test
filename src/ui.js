@@ -5,7 +5,7 @@ import {
   INFO_PANEL_HEADING,
 } from './content.js';
 
-export function createUi({ onViewChange, onResetView }) {
+export function createUi({ onViewChange, onResetView, onCycleChange }) {
   const root = document.createElement('div');
   root.className = 'ui-root';
 
@@ -65,6 +65,18 @@ export function createUi({ onViewChange, onResetView }) {
   viewBar.className = 'view-bar';
   viewBar.setAttribute('aria-label', 'Scene views');
 
+  const cycleToggle = document.createElement('button');
+  cycleToggle.type = 'button';
+  cycleToggle.className = 'view-button cycle-toggle active';
+  cycleToggle.setAttribute('aria-label', 'Cycle views');
+  cycleToggle.setAttribute('aria-pressed', 'true');
+  cycleToggle.title = 'Cycle views (10s each)';
+  cycleToggle.textContent = '⟳';
+
+  const viewDivider = document.createElement('span');
+  viewDivider.className = 'view-bar__divider';
+  viewDivider.setAttribute('aria-hidden', 'true');
+
   const buttons = VIEWS.map((view) => {
     const button = document.createElement('button');
     button.type = 'button';
@@ -76,6 +88,23 @@ export function createUi({ onViewChange, onResetView }) {
     });
     viewBar.appendChild(button);
     return button;
+  });
+
+  viewBar.insertBefore(cycleToggle, viewBar.firstChild);
+  viewBar.insertBefore(viewDivider, buttons[0] ?? null);
+
+  let cycleEnabled = true;
+
+  cycleToggle.addEventListener('click', () => {
+    cycleEnabled = !cycleEnabled;
+    cycleToggle.classList.toggle('active', cycleEnabled);
+    cycleToggle.setAttribute('aria-pressed', String(cycleEnabled));
+    cycleToggle.title = cycleEnabled ? 'Cycle views (10s each)' : 'Enable view cycling';
+    cycleToggle.setAttribute(
+      'aria-label',
+      cycleEnabled ? 'Cycle views' : 'Enable view cycling',
+    );
+    onCycleChange(cycleEnabled);
   });
 
   const fpsCounter = document.createElement('div');
