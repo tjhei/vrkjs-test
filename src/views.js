@@ -1,7 +1,6 @@
 export const VIEWS = [
-  { id: 'earth', label: 'Earth', url: '/data/earth-lowres.vtkjs' },
-  { id: 'dragon', label: 'Dragon', url: '/data/alduin-dragon.vtkjs' },
-  { id: 'assembly', label: 'Assembly', url: '/data/TBarAssembly.vtkjs' },
-  { id: 'moyeu', label: 'Moyeu', url: '/data/MoyeuExpensible.vtkjs' },
-  { id: 'pin', label: 'Pin', url: '/data/singlepin.vtkjs' },
+  { id: '3', label: 'plates', url: './data/3.vtkjs' },
+  { id: 'topo1', label: 'topo', url: './data/topo1.vtkjs' },
+  { id: 'slabs', label: 'slabs', url: './data/slabs.vtkjs' },
+  { id: 'tomo', label: 'tomo', url: './data/tomo.vtkjs' },
 ];
