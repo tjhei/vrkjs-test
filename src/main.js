@@ -41,69 +41,41 @@ const viewById = Object.fromEntries(VIEWS.map((view) => [view.id, view]));
 let activeViewId = VIEWS[0].id;
 let cycleEnabled = true;
 let cycleTimerId = 0;
-let cycleRemainingMs = CYCLE_INTERVAL_MS;
-let cycleTimerStart = 0;
-let cyclePausedByInteraction = false;
 
 function getNextViewId(currentId) {
   const index = VIEWS.findIndex((view) => view.id === currentId);
   return VIEWS[(index + 1) % VIEWS.length].id;
 }
 
-function captureCycleRemaining() {
-  if (cycleTimerId && cycleTimerStart) {
-    cycleRemainingMs = Math.max(
-      0,
-      cycleRemainingMs - (performance.now() - cycleTimerStart),
-    );
-  }
-}
-
-function clearCycleTimer({ resetRemaining = false } = {}) {
-  captureCycleRemaining();
+function clearCycleTimer() {
   if (cycleTimerId) {
     clearTimeout(cycleTimerId);
     cycleTimerId = 0;
   }
-  cycleTimerStart = 0;
-  if (resetRemaining) {
-    cycleRemainingMs = CYCLE_INTERVAL_MS;
-  }
 }
 
-function scheduleNextCycle(delayMs = cycleRemainingMs) {
+function scheduleNextCycle() {
   clearCycleTimer();
-  if (!cycleEnabled || cyclePausedByInteraction) {
-    cycleRemainingMs = delayMs;
+  if (!cycleEnabled || rotationController.isRotationPaused()) {
     return;
   }
 
-  cycleRemainingMs = delayMs;
-  cycleTimerStart = performance.now();
   cycleTimerId = window.setTimeout(async () => {
     cycleTimerId = 0;
-    cycleTimerStart = 0;
     const nextId = getNextViewId(activeViewId);
     await switchView(nextId);
-    cycleRemainingMs = CYCLE_INTERVAL_MS;
-    scheduleNextCycle(CYCLE_INTERVAL_MS);
-  }, delayMs);
+    scheduleNextCycle();
+  }, CYCLE_INTERVAL_MS);
 }
 
 rotationController.onPauseChange((paused) => {
   if (!cycleEnabled) {
     return;
   }
-
-  if (paused && !cyclePausedByInteraction) {
-    cyclePausedByInteraction = true;
+  if (paused) {
     clearCycleTimer();
-    return;
-  }
-
-  if (!paused && cyclePausedByInteraction) {
-    cyclePausedByInteraction = false;
-    scheduleNextCycle(cycleRemainingMs);
+  } else {
+    scheduleNextCycle();
   }
 });
 
@@ -112,8 +84,8 @@ const ui = createUi({
     if (viewId === activeViewId) {
       return;
     }
-    clearCycleTimer({ resetRemaining: true });
-    switchView(viewId).then(() => scheduleNextCycle(CYCLE_INTERVAL_MS));
+    clearCycleTimer();
+    switchView(viewId).then(() => scheduleNextCycle());
   },
   onResetView: () => {
     sceneManager.resetActiveCameraView();
@@ -121,9 +93,9 @@ const ui = createUi({
   onCycleChange: (enabled) => {
     cycleEnabled = enabled;
     if (enabled) {
-      scheduleNextCycle(CYCLE_INTERVAL_MS);
+      scheduleNextCycle();
     } else {
-      clearCycleTimer({ resetRemaining: true });
+      clearCycleTimer();
     }
   },
 });
@@ -168,7 +140,7 @@ switchView(activeViewId)
   .then(() => {
     frameLoop.start();
     ui.startFpsDisplay(() => fpsCounter.getFps());
-    scheduleNextCycle(CYCLE_INTERVAL_MS);
+    scheduleNextCycle();
   })
   .catch((error) => {
     console.error('Failed to load initial scene:', error);
