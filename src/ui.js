@@ -111,11 +111,22 @@ export function createUi({ onViewChange, onResetView, onCycleChange }) {
   fpsCounter.className = 'fps-counter';
   fpsCounter.textContent = 'FPS —';
 
+  const loadingOverlay = document.createElement('div');
+  loadingOverlay.className = 'loading-overlay';
+  loadingOverlay.hidden = true;
+  loadingOverlay.innerHTML = `
+    <div class="loading-overlay__content">
+      <div class="loading-spinner" aria-hidden="true"></div>
+      <span class="loading-overlay__label">Loading scene…</span>
+    </div>
+  `;
+
   root.appendChild(header);
   root.appendChild(actionBar);
   root.appendChild(infoPanel);
   root.appendChild(viewBar);
   root.appendChild(fpsCounter);
+  root.appendChild(loadingOverlay);
   document.body.appendChild(root);
 
   function setInfoPanelVisible(visible) {
@@ -137,6 +148,7 @@ export function createUi({ onViewChange, onResetView, onCycleChange }) {
   }
 
   function setLoading(loading) {
+    loadingOverlay.hidden = !loading;
     buttons.forEach((button) => {
       button.disabled = loading;
     });
