@@ -46,6 +46,9 @@ const ui = createUi({
     }
     switchView(viewId);
   },
+  onResetView: () => {
+    sceneManager.resetActiveCameraView();
+  },
 });
 
 ui.setActiveView(activeViewId);

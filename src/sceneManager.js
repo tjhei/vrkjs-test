@@ -1,3 +1,4 @@
+import { captureCameraState, restoreCameraState } from './cameraHome.js';
 import { loadVtkJsScene } from './loadVtkJsScene.js';
 import {
   animateFade,
@@ -24,7 +25,9 @@ function hideAllScenes(cache) {
  * Lazy-load scenes on first visit, keep them cached, and cross-fade transitions.
  */
 export function createSceneManager(renderer, renderWindow) {
+  const camera = renderer.getActiveCamera();
   const cache = new Map();
+  const homeCameraByViewId = new Map();
   let activeViewId = null;
   let activeTransitionId = 0;
 
@@ -79,6 +82,7 @@ export function createSceneManager(renderer, renderWindow) {
     }
 
     renderer.resetCamera();
+    homeCameraByViewId.set(viewId, captureCameraState(camera));
 
     await animateFade({
       entries: incoming.entries,
@@ -99,9 +103,20 @@ export function createSceneManager(renderer, renderWindow) {
     return incoming.sceneLoader;
   }
 
+  function resetActiveCameraView() {
+    const homeCamera = activeViewId ? homeCameraByViewId.get(activeViewId) : null;
+    if (!restoreCameraState(camera, homeCamera)) {
+      return false;
+    }
+
+    renderWindow.render();
+    return true;
+  }
+
   return {
     loadScene,
     isCached: (viewId) => cache.has(viewId),
     getActiveViewId: () => activeViewId,
+    resetActiveCameraView,
   };
 }
