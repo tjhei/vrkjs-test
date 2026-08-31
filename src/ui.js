@@ -129,6 +129,12 @@ export function createUi({ onViewChange, onResetView, onCycleChange }) {
   root.appendChild(loadingOverlay);
   document.body.appendChild(root);
 
+  const viewBarObserver = new ResizeObserver(() => {
+    root.style.setProperty('--view-bar-height', `${viewBar.offsetHeight}px`);
+  });
+  viewBarObserver.observe(viewBar);
+  root.style.setProperty('--view-bar-height', `${viewBar.offsetHeight}px`);
+
   function setInfoPanelVisible(visible) {
     root.classList.toggle('info-panel-hidden', !visible);
     infoPanel.hidden = !visible;

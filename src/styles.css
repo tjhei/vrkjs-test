@@ -6,7 +6,9 @@
   --info-panel-width: 248px;
   --header-height: 52px;
   --action-bar-height: 44px;
+  --action-bar-reserve: 124px;
   --fps-bar-height: 32px;
+  --view-bar-height: 0px;
 }
 
 html,
@@ -318,17 +320,24 @@ body {
   }
 
   .app-title {
+    left: max(var(--ui-gutter), env(safe-area-inset-left));
+    right: calc(max(var(--ui-gutter), env(safe-area-inset-right)) + var(--action-bar-reserve));
+    transform: none;
     padding: 8px 14px;
-    max-width: calc(100% - 100px);
+    max-width: none;
+    text-align: left;
   }
 
   .info-panel {
     top: calc(max(var(--ui-gutter), env(safe-area-inset-top)) + var(--header-height));
     left: max(var(--ui-gutter), env(safe-area-inset-left));
     right: max(var(--ui-gutter), env(safe-area-inset-right));
-    bottom: auto;
+    bottom: calc(
+      max(var(--ui-gutter), env(safe-area-inset-bottom)) + var(--fps-bar-height) +
+        var(--view-bar-height) + 8px
+    );
     width: auto;
-    max-height: min(30vh, 200px);
+    max-height: none;
     padding: 14px;
   }
 
@@ -338,10 +347,14 @@ body {
   }
 
   .view-bar {
+    left: max(var(--ui-gutter), env(safe-area-inset-left));
+    right: max(var(--ui-gutter), env(safe-area-inset-right));
+    transform: none;
+    width: auto;
+    max-width: none;
     border-radius: 16px;
-    max-width: calc(100% - 24px);
     gap: 6px;
-    padding: 6px;
+    padding: 8px;
     bottom: calc(max(var(--ui-gutter), env(safe-area-inset-bottom)) + var(--fps-bar-height));
   }
 
@@ -351,6 +364,8 @@ body {
     max-width: calc(50% - 3px);
     padding: 8px 10px;
     font-size: 12px;
+    line-height: 1.25;
+    text-align: center;
   }
 }
 
