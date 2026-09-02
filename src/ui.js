@@ -42,9 +42,9 @@ export function createUi({ onViewChange, onResetView, onCycleChange }) {
   fullscreenButton.title = 'Toggle fullscreen';
   fullscreenButton.textContent = '⛶';
 
-  actionBar.appendChild(infoToggle);
   actionBar.appendChild(resetViewButton);
   actionBar.appendChild(fullscreenButton);
+  actionBar.appendChild(infoToggle);
 
   const infoPanel = document.createElement('aside');
   infoPanel.className = 'info-panel';
