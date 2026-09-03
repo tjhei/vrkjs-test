@@ -44,13 +44,15 @@ export const INFO_PANEL_BODY_HTML = `
     from the upper mantle.
   </p>
   <p>
-    This website was made by Arushi Saxena and Timo Heister.
+    This website was made with
+    <a href="https://kitware.github.io/vtk-js/" target="_blank" rel="noopener noreferrer">VTK.js</a>
+    by
+    <a href="https://alarshi.github.io/" target="_blank" rel="noopener noreferrer">Arushi Saxena</a>
+    and
+    <a href="https://www.math.clemson.edu/~heister/" target="_blank" rel="noopener noreferrer">Timo Heister</a>
+    as part of the
+    <a href="https://integrated-earth.github.io/" target="_blank" rel="noopener noreferrer">NSF-sponsored Integrated Earth project</a>.
   </p>
-  <ul class="info-panel__links">
-    <li><a href="https://alarshi.github.io/" target="_blank" rel="noopener noreferrer">Arushi Saxena</a></li>
-    <li><a href="https://www.math.clemson.edu/~heister/" target="_blank" rel="noopener noreferrer">Timo Heister</a></li>
-    <li><a href="https://integrated-earth.github.io/" target="_blank" rel="noopener noreferrer">Integrated Earth — NSF-sponsored project</a></li>
-    <li><a href="https://kitware.github.io/vtk-js/" target="_blank" rel="noopener noreferrer">VTK.js documentation</a></li>
-    <li><a href="https://github.com/tjhei/vrkjs-test" target="_blank" rel="noopener noreferrer">This project</a></li>
-  </ul>
+  <p><a href="https://github.com/tjhei/vrkjs-test" target="_blank" rel="noopener noreferrer">Source of this website</a>
+  </p>
 `;
