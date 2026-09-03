@@ -58,8 +58,15 @@ export function createUi({ onViewChange, onResetView, onCycleChange }) {
   infoPanelBody.className = 'info-panel__body';
   infoPanelBody.innerHTML = INFO_PANEL_BODY_HTML;
 
+  const infoPanelHide = document.createElement('button');
+  infoPanelHide.type = 'button';
+  infoPanelHide.className = 'info-panel__hide';
+  infoPanelHide.textContent = 'Hide';
+  infoPanelHide.setAttribute('aria-label', 'Hide information panel');
+
   infoPanel.appendChild(infoPanelHeading);
   infoPanel.appendChild(infoPanelBody);
+  infoPanel.appendChild(infoPanelHide);
 
   const viewBar = document.createElement('nav');
   viewBar.className = 'view-bar';
@@ -145,6 +152,10 @@ export function createUi({ onViewChange, onResetView, onCycleChange }) {
 
   infoToggle.addEventListener('click', () => {
     setInfoPanelVisible(infoPanel.hidden);
+  });
+
+  infoPanelHide.addEventListener('click', () => {
+    setInfoPanelVisible(false);
   });
 
   function setActiveView(viewId) {
