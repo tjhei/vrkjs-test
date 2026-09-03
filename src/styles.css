@@ -124,6 +124,28 @@ body {
   background: rgba(255, 255, 255, 0.08);
 }
 
+.info-panel__hide {
+  display: block;
+  width: min(100%, 220px);
+  margin: 20px auto 4px;
+  padding: 14px 24px;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.08);
+  color: #f2f2f2;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    border-color 0.15s ease;
+}
+
+.info-panel__hide:hover {
+  background: rgba(255, 255, 255, 0.14);
+  border-color: rgba(255, 255, 255, 0.25);
+}
+
 .info-panel__links {
   margin: 16px 0 0;
   padding-left: 18px;
